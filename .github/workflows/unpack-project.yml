@@ -1,0 +1,26 @@
+name: Complete project upload
+
+on:
+  push:
+    branches: [main]
+    paths: [project-package.b64, .github/workflows/unpack-project.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  unpack-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore project files
+        run: |
+          base64 --decode project-package.b64 > /tmp/maker-lab-map-p.tar.gz
+          tar -xzf /tmp/maker-lab-map-p.tar.gz
+          rm project-package.b64
+          rm .github/workflows/unpack-project.yml
+          git config user.name "Anant Madhok"
+          git config user.email "anant.madhok88@gmail.com"
+          git add -A
+          git commit -m "Add Maker Lab Map P source"
+          git push
