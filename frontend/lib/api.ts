@@ -1,7 +1,9 @@
 import type { Place, SearchResponse } from "@/lib/types";
+import { staticGetPlace, staticPlaces, staticSearchPlaces } from "@/lib/static-search";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const STATIC_EXPORT = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
@@ -34,6 +36,10 @@ export function searchPlaces(payload: {
     equipment_types: string[];
   };
 }): Promise<SearchResponse> {
+  if (STATIC_EXPORT) {
+    return Promise.resolve(staticSearchPlaces(payload));
+  }
+
   return request("/api/search", {
     method: "POST",
     body: JSON.stringify(payload),
@@ -41,14 +47,29 @@ export function searchPlaces(payload: {
 }
 
 export function getPlace(placeId: string): Promise<Place> {
+  if (STATIC_EXPORT) {
+    return Promise.resolve(staticGetPlace(placeId));
+  }
+
   return request(`/api/places/${placeId}`);
 }
 
 export function getPlaces(): Promise<Place[]> {
+  if (STATIC_EXPORT) {
+    return Promise.resolve(staticPlaces);
+  }
+
   return request("/api/places");
 }
 
 export function recrawlPlace(placeId: string): Promise<Record<string, unknown>> {
+  if (STATIC_EXPORT) {
+    return Promise.resolve({
+      status: "static",
+      message: `Static demo data is already loaded for ${placeId}.`,
+    });
+  }
+
   return request(`/api/admin/crawl/${placeId}`, { method: "POST" });
 }
 
@@ -57,6 +78,13 @@ export function verifyPlace(
   qualificationStatus: string,
   confidenceScore: number,
 ): Promise<Record<string, unknown>> {
+  if (STATIC_EXPORT) {
+    return Promise.resolve({
+      status: "static",
+      message: `${qualificationStatus} remains at ${confidenceScore}% in the static demo.`,
+    });
+  }
+
   return request(`/api/admin/verify/${placeId}`, {
     method: "POST",
     body: JSON.stringify({
@@ -66,4 +94,3 @@ export function verifyPlace(
     }),
   });
 }
-
