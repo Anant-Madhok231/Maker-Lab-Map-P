@@ -1,0 +1,61 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      APP_ENV: development
+      FRONTEND_ORIGIN: http://localhost:3000
+      DATABASE_URL: postgresql://makerfinder:makerfinder@postgres:5432/makerfinder
+      REDIS_URL: redis://redis:6379/0
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+      YELP_API_KEY: ${YELP_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  worker:
+    build: ./backend
+    command: rq worker makerfinder --url redis://redis:6379/0
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql://makerfinder:makerfinder@postgres:5432/makerfinder
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+    depends_on:
+      - redis
+      - postgres
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: makerfinder
+      POSTGRES_USER: makerfinder
+      POSTGRES_PASSWORD: makerfinder
+    ports:
+      - "5432:5432"
+    volumes:
+      - makerfinder_postgres:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - makerfinder_redis:/data
+
+volumes:
+  makerfinder_postgres:
+  makerfinder_redis:
+
