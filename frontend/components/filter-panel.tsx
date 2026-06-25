@@ -66,7 +66,7 @@ export function FilterPanel({
   }
 
   return (
-    <aside className="rounded-[24px] border border-[#172a20]/10 bg-white p-5">
+    <aside className="animate-card-in rounded-[24px] border border-[#172a20]/10 bg-white p-5">
       <div className="flex items-center gap-2">
         <FilterIcon className="h-5 w-5 text-[#df6f48]" />
         <h2 className="text-base font-black text-[#172a20]">Refine capability</h2>
@@ -139,7 +139,7 @@ export function FilterPanel({
         <div className="space-y-2">
           {equipmentOptions.map(([type, label]) => (
             <label
-              className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-[#465249]"
+              className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-[#465249] transition hover:translate-x-1 hover:text-[#172a20]"
               key={type}
             >
               <input
