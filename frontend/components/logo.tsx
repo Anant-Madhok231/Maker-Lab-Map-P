@@ -13,7 +13,7 @@ export function Logo() {
           Maker Lab Map P
         </span>
         <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.2em] text-[#6d786f]">
-          Brooklyn maker labs
+          Maker lab finder
         </span>
       </span>
     </Link>
