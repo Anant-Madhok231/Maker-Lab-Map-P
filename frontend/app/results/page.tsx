@@ -16,8 +16,10 @@ import type { SearchResponse } from "@/lib/types";
 function ResultsContent() {
   const params = useSearchParams();
   const location = params.get("location") || "UC Davis";
-  const routeLat = Number(params.get("lat"));
-  const routeLng = Number(params.get("lng"));
+  const routeLatParam = params.get("lat");
+  const routeLngParam = params.get("lng");
+  const routeLat = routeLatParam === null ? Number.NaN : Number(routeLatParam);
+  const routeLng = routeLngParam === null ? Number.NaN : Number(routeLngParam);
   const routePoint = useMemo(
     () =>
       Number.isFinite(routeLat) && Number.isFinite(routeLng)
