@@ -24,13 +24,13 @@ jobs:
 
       - name: Apply pending website package
         run: |
-          if [ -f project-update-3.b64 ]; then
-            base64 -d project-update-3.b64 > pages-update.tar.gz
+          if [ -f project-update-4.b64 ]; then
+            base64 -d project-update-4.b64 > pages-update.tar.gz
             tar -xzf pages-update.tar.gz
             rm pages-update.tar.gz
             find . -name '._*' -delete
-            git rm -f project-update-3.b64 2>/dev/null || true
-            git add README.md .github/workflows/apply-pages-update.yml frontend
+            git rm -f project-update-3.b64 project-update-4.b64 2>/dev/null || true
+            git add README.md frontend project-update-3.b64 project-update-4.b64
             if git diff --cached --quiet; then
               echo "No packaged source changes to commit."
             else
