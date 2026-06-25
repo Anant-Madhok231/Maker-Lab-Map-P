@@ -37,7 +37,11 @@ export function ResultCard({
 }: ResultCardProps) {
   const status = confidence(place);
   const largeCnc = place.equipment.find(
-    (item) => item.equipment_type === "cnc_router" && item.passes_48x48,
+    (item) =>
+      item.equipment_type === "cnc_router" &&
+      item.passes_48x48 &&
+      item.bed_width_in !== null &&
+      item.bed_length_in !== null,
   );
   const destination = { lat: place.lat, lng: place.lng };
   const exactDistance = userLocation
