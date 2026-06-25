@@ -42,7 +42,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="relative mt-10 max-w-4xl">
+        <div className="relative mt-10 max-w-4xl animate-fade-up [animation-delay:140ms]">
           <SearchBox />
           <p className="mt-3 pl-3 text-xs font-semibold text-[#7c857e]">
             Try “UC Davis,” “Sacramento,” “Woodland,” “Brooklyn,” or “Sunset Park”
@@ -50,7 +50,7 @@ export default function Home() {
         </div>
 
         <div className="relative mt-20 grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
-          <div className="rounded-[34px] bg-[#172a20] p-7 text-white sm:p-9">
+          <div className="animate-card-in sheen-on-hover rounded-[34px] bg-[#172a20] p-7 text-white sm:p-9 [animation-delay:220ms]">
             <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#ffb85c]">
               Built for real trips
             </p>
@@ -64,7 +64,7 @@ export default function Home() {
                 ["Source links", "Evidence for each claim"],
               ].map(([value, label]) => (
                 <div
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10"
+                  className="hover-lift rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10"
                   key={value}
                 >
                   <p className="text-lg font-black text-white">{value}</p>
@@ -77,7 +77,7 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-3">
             {quickChoices.map(([title, subtitle], index) => (
               <Link
-                className="group flex min-h-40 flex-col justify-between rounded-[26px] border border-[#172a20]/10 bg-white p-5 transition hover:-translate-y-1 hover:border-[#df6f48]/50 hover:shadow-xl"
+                className="animate-card-in hover-lift group flex min-h-40 flex-col justify-between rounded-[26px] border border-[#172a20]/10 bg-white p-5 hover:border-[#df6f48]/50 hover:shadow-xl"
                 href={
                   index === 0
                     ? "/results?location=UC+Davis&radius=50&cnc=false&large=false"
@@ -88,9 +88,10 @@ export default function Home() {
                         : "/results?location=UC+Davis&radius=50&cnc=false&large=false"
                 }
                 key={title}
+                style={{ animationDelay: `${300 + index * 80}ms` }}
               >
                 <span
-                  className={`grid h-10 w-10 place-items-center rounded-xl ${
+                  className={`grid h-10 w-10 place-items-center rounded-xl transition duration-300 group-hover:rotate-3 group-hover:scale-110 ${
                     index === 0
                       ? "bg-[#df6f48] text-white"
                       : "bg-[#eff0e8] text-[#172a20]"
@@ -118,9 +119,13 @@ export default function Home() {
             [PinIcon, "Search locally", "Start with any location and choose a practical travel radius."],
             [MachineIcon, "Match capability", "Filter by machine type, bed size, material, files, and access."],
             [ShieldIcon, "Inspect evidence", "Open the exact official source behind every equipment claim."],
-          ].map(([Icon, title, text]) => (
-            <div className="flex gap-4" key={String(title)}>
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-[#df6f48] shadow-sm">
+          ].map(([Icon, title, text], index) => (
+            <div
+              className="animate-card-in flex gap-4"
+              key={String(title)}
+              style={{ animationDelay: `${120 + index * 90}ms` }}
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-[#df6f48] shadow-sm transition duration-300 hover:rotate-3 hover:scale-105">
                 <Icon className="h-5 w-5" />
               </span>
               <div>
