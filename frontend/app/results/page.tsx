@@ -14,8 +14,8 @@ import type { SearchResponse } from "@/lib/types";
 
 function ResultsContent() {
   const params = useSearchParams();
-  const location = params.get("location") || "Brooklyn, NY";
-  const initialRadius = Number(params.get("radius") || 25);
+  const location = params.get("location") || "UC Davis";
+  const initialRadius = Number(params.get("radius") || 50);
   const [radius, setRadius] = useState(initialRadius);
   const [filters, setFilters] = useState<Filters>({
     cnc: params.get("cnc") === "true",
@@ -111,15 +111,15 @@ function ResultsContent() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.17em] text-[#df6f48]">
-              Brooklyn maker map
+              Maker lab map
             </p>
             <h1 className="mt-2 text-3xl font-black tracking-[-0.045em] text-[#172a20]">
               Maker labs near {location}
             </h1>
             <p className="mt-2 text-sm text-[#68736b]">
               {data
-                ? `${data.total} source-backed Brooklyn matches within ${radius} miles of ${data.normalized_address}`
-                : "Checking Brooklyn labs, access notes, and source evidence…"}
+                ? `${data.total} source-backed matches within ${radius} miles of ${data.normalized_address}`
+                : "Checking labs, access notes, and source evidence…"}
             </p>
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
