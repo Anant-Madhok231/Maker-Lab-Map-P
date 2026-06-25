@@ -1,12 +1,12 @@
 # Maker Lab Map P
 
-Maker Lab Map P is a location-based maker-lab finder for Brooklyn, New York. It ranks labs, workshops, hackerspaces, school labs, and fabrication hubs by documented capability, access notes, and source evidence.
+Maker Lab Map P is a location-based maker-lab finder with source-backed records for Davis, Woodland, Sacramento, and Brooklyn. It ranks labs, workshops, hackerspaces, school labs, and fabrication hubs by documented capability, access notes, and source evidence.
 
-The included MVP works immediately with a curated, evidence-backed Brooklyn dataset. Optional Google Places, Google Geocoding, and Firecrawl keys enable live discovery and official-site recrawls.
+The included MVP works immediately with a curated, evidence-backed dataset. Optional Google Places, Google Geocoding, and Firecrawl keys enable live discovery and official-site recrawls.
 
 ## What is included
 
-- Location search for Brooklyn, Sunset Park, Industry City, Downtown Brooklyn, Gowanus, Fort Greene, and Brooklyn Navy Yard
+- Location search for UC Davis, Davis, Woodland, Sacramento, Brooklyn, Sunset Park, Industry City, Downtown Brooklyn, Gowanus, Fort Greene, and Brooklyn Navy Yard
 - Radius controls from 5 to 100 miles
 - CNC-router, equipment, access, and guided-support filters
 - Browser location button for exact distance from the visitor's pin
