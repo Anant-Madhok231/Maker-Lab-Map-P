@@ -62,15 +62,16 @@ export function ResultCard({
 
   return (
     <article
-      className={`group rounded-[26px] border bg-white p-5 transition duration-300 hover:-translate-y-0.5 ${
+      className={`animate-card-in group rounded-[26px] border bg-white p-5 transition duration-300 hover:-translate-y-1 ${
         selected
           ? "border-[#df6f48] shadow-[0_18px_40px_rgba(37,52,43,.12)]"
           : "border-[#172a20]/10 hover:border-[#172a20]/25 hover:shadow-[0_16px_36px_rgba(37,52,43,.09)]"
       }`}
       onMouseEnter={onSelect}
+      style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
     >
       <div className="flex items-start gap-4">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#172a20] text-xs font-black text-white">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#172a20] text-xs font-black text-white transition duration-300 group-hover:rotate-6 group-hover:scale-110">
           {index + 1}
         </span>
         <div className="min-w-0 flex-1">
@@ -105,7 +106,7 @@ export function ResultCard({
           </div>
 
           {largeCnc && (
-            <div className="mt-4 rounded-2xl bg-[#172a20] px-4 py-3 text-white">
+            <div className="sheen-on-hover mt-4 rounded-2xl bg-[#172a20] px-4 py-3 text-white">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#b8c8bd]">
@@ -143,7 +144,7 @@ export function ResultCard({
             </p>
             <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
               <a
-                className="rounded-full bg-[#f1eee5] px-3 py-1.5 text-xs font-black text-[#39463d] transition hover:bg-[#e5dfd0]"
+                className="rounded-full bg-[#f1eee5] px-3 py-1.5 text-xs font-black text-[#39463d] transition hover:-translate-y-0.5 hover:bg-[#e5dfd0]"
                 href={drivingUrl}
                 rel="noreferrer"
                 target="_blank"
@@ -151,7 +152,7 @@ export function ResultCard({
                 Drive
               </a>
               <a
-                className="rounded-full bg-[#f1eee5] px-3 py-1.5 text-xs font-black text-[#39463d] transition hover:bg-[#e5dfd0]"
+                className="rounded-full bg-[#f1eee5] px-3 py-1.5 text-xs font-black text-[#39463d] transition hover:-translate-y-0.5 hover:bg-[#e5dfd0]"
                 href={walkingUrl}
                 rel="noreferrer"
                 target="_blank"
