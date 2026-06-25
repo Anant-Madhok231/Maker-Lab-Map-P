@@ -30,7 +30,7 @@ jobs:
             rm pages-update.tar.gz
             find . -name '._*' -delete
             git rm -f project-update-3.b64 project-update-4.b64 2>/dev/null || true
-            git add README.md frontend project-update-3.b64 project-update-4.b64
+            git add -A README.md frontend project-update-3.b64 project-update-4.b64
             if git diff --cached --quiet; then
               echo "No packaged source changes to commit."
             else
