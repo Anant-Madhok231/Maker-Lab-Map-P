@@ -10,6 +10,26 @@ const knownLocations: Record<string, AddressPoint> = {
     lat: 38.5382,
     lng: -121.7617,
   },
+  "one shields avenue davis ca": {
+    address: "One Shields Avenue, Davis, CA",
+    lat: 38.5382,
+    lng: -121.7617,
+  },
+  "one shields avenue davis ca 95616": {
+    address: "One Shields Avenue, Davis, CA 95616",
+    lat: 38.5382,
+    lng: -121.7617,
+  },
+  "1 shields avenue davis ca": {
+    address: "One Shields Avenue, Davis, CA",
+    lat: 38.5382,
+    lng: -121.7617,
+  },
+  "1 shields ave davis ca": {
+    address: "One Shields Avenue, Davis, CA",
+    lat: 38.5382,
+    lng: -121.7617,
+  },
   davis: { address: "Davis, CA, USA", lat: 38.5449, lng: -121.7405 },
   "davis ca": { address: "Davis, CA, USA", lat: 38.5449, lng: -121.7405 },
   woodland: { address: "Woodland, CA, USA", lat: 38.6785, lng: -121.7733 },
