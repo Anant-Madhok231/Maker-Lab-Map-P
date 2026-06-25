@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s | Maker Lab Map P",
   },
   description:
-    "Find source-backed maker labs, workshops, hackerspaces, school labs, and fabrication services across Brooklyn, New York.",
+    "Find source-backed maker labs, workshops, hackerspaces, school labs, and fabrication services by documented capability.",
 };
 
 export default function RootLayout({
