@@ -16,6 +16,15 @@ import type { SearchResponse } from "@/lib/types";
 function ResultsContent() {
   const params = useSearchParams();
   const location = params.get("location") || "UC Davis";
+  const routeLat = Number(params.get("lat"));
+  const routeLng = Number(params.get("lng"));
+  const routePoint = useMemo(
+    () =>
+      Number.isFinite(routeLat) && Number.isFinite(routeLng)
+        ? { lat: routeLat, lng: routeLng }
+        : null,
+    [routeLat, routeLng],
+  );
   const initialRadius = Number(params.get("radius") || 50);
   const [radius, setRadius] = useState(initialRadius);
   const [filters, setFilters] = useState<Filters>({
@@ -30,9 +39,9 @@ function ResultsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(routePoint);
   const [addressPoint, setAddressPoint] = useState<AddressPoint | null>(null);
-  const [addressQuery, setAddressQuery] = useState("");
+  const [addressQuery, setAddressQuery] = useState(routePoint ? location : "");
   const [locationStatus, setLocationStatus] = useState("");
   const addressReady = addressQuery === location;
   const activeOrigin = addressReady ? userLocation || addressPoint : null;
@@ -65,6 +74,21 @@ function ResultsContent() {
   useEffect(() => {
     let active = true;
 
+    if (routePoint) {
+      const timer = window.setTimeout(() => {
+        if (!active) return;
+        setUserLocation(routePoint);
+        setAddressPoint(null);
+        setAddressQuery(location);
+        setLocationStatus("Using your current location as the starting point.");
+      }, 0);
+
+      return () => {
+        active = false;
+        window.clearTimeout(timer);
+      };
+    }
+
     geocodeAddress(location).then((point) => {
       if (!active) return;
       setUserLocation(null);
@@ -80,7 +104,7 @@ function ResultsContent() {
     return () => {
       active = false;
     };
-  }, [location]);
+  }, [location, routePoint]);
 
   useEffect(() => {
     if (!addressReady) return;
@@ -138,7 +162,12 @@ function ResultsContent() {
       <SiteHeader />
       <div className="border-b border-[#172a20]/8 bg-[#efece3]">
         <div className="mx-auto max-w-[1440px] px-5 py-5 sm:px-8">
-          <SearchBox compact initialLocation={location} initialRadius={radius} />
+          <SearchBox
+            compact
+            initialLocation={location}
+            initialPoint={routePoint}
+            initialRadius={radius}
+          />
         </div>
       </div>
 
