@@ -59,7 +59,7 @@ export function MapPanel({ places, selectedId, onSelect, userLocation }: MapPane
 
   return (
     <div className="relative h-full min-h-[430px] overflow-hidden rounded-[28px] border border-[#172a20]/10 bg-[#e8e8d9] shadow-[0_24px_80px_rgba(23,42,32,.12)]">
-      <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(28deg,transparent_46%,rgba(255,255,255,.8)_47%,rgba(255,255,255,.8)_50%,transparent_51%),linear-gradient(118deg,transparent_46%,rgba(255,255,255,.9)_47%,rgba(255,255,255,.9)_50%,transparent_51%)] [background-size:90px_90px,120px_120px]" />
+      <div className="animate-map-drift absolute inset-[-24px] opacity-70 [background-image:linear-gradient(28deg,transparent_46%,rgba(255,255,255,.8)_47%,rgba(255,255,255,.8)_50%,transparent_51%),linear-gradient(118deg,transparent_46%,rgba(255,255,255,.9)_47%,rgba(255,255,255,.9)_50%,transparent_51%)] [background-size:90px_90px,120px_120px]" />
       <div className="absolute -left-10 top-[52%] h-14 w-[120%] -rotate-6 bg-[#b9d0ca]/80" />
       <div className="absolute right-[20%] top-0 h-full w-10 rotate-12 bg-white/80" />
       <div className="absolute inset-x-0 top-[32%] h-2 rotate-3 bg-[#d5cdb8]" />
@@ -79,14 +79,17 @@ export function MapPanel({ places, selectedId, onSelect, userLocation }: MapPane
         return (
           <button
             aria-label={`Select ${place.name}`}
-            className={`absolute z-10 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[3px] border-white text-sm font-black shadow-[0_7px_18px_rgba(23,42,32,.28)] transition ${
+            className={`animate-marker-pop absolute z-10 grid h-10 w-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-[3px] border-white text-sm font-black shadow-[0_7px_18px_rgba(23,42,32,.28)] transition ${
               active
                 ? "scale-125 bg-[#df6f48] text-white"
                 : "bg-[#172a20] text-white hover:scale-110 hover:bg-[#244333]"
             }`}
             key={place.id}
             onClick={() => onSelect(place.id)}
-            style={markerPosition(place.lat, place.lng, mapBounds)}
+            style={{
+              ...markerPosition(place.lat, place.lng, mapBounds),
+              animationDelay: `${index * 55}ms`,
+            }}
             type="button"
           >
             {index + 1}
@@ -96,7 +99,7 @@ export function MapPanel({ places, selectedId, onSelect, userLocation }: MapPane
 
       {userLocation && (
         <span
-          className="absolute z-20 grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#2f7bff] shadow-[0_0_0_8px_rgba(47,123,255,.18)]"
+          className="animate-pin-pulse absolute z-20 grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#2f7bff] shadow-[0_0_0_8px_rgba(47,123,255,.18)]"
           style={markerPosition(userLocation.lat, userLocation.lng, mapBounds)}
           title="Your location"
         >
