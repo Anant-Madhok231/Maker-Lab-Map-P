@@ -21,26 +21,24 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Apply pending website package
+        shell: bash
         run: |
           if [ -f project-update-4.b64 ]; then
-            base64 -d project-update-4.b64 > pages-update.tar.gz
-            tar -xzf pages-update.tar.gz
-            rm pages-update.tar.gz
-            find . -name '._*' -delete
+            mkdir -p /tmp/maker-lab-map-p-update
+            base64 -d project-update-4.b64 > /tmp/maker-lab-map-p-update/update.tar.gz
+            tar -xzf /tmp/maker-lab-map-p-update/update.tar.gz -C .
             git rm -f project-update-3.b64 project-update-4.b64 2>/dev/null || true
-            git add -A README.md frontend project-update-3.b64 project-update-4.b64
-            if git diff --cached --quiet; then
-              echo "No packaged source changes to commit."
-            else
-              git config user.name "Anant-Madhok231"
-              git config user.email "Anant-Madhok231@users.noreply.github.com"
-              git commit -m "Update website for Brooklyn maker labs"
-              git push
+            git add -A
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            if ! git diff --cached --quiet; then
+              git commit -m "Apply Brooklyn maker lab website update"
+              git push origin HEAD:main
             fi
-          else
-            echo "No pending website package found."
           fi
 
       - name: Set up Node.js
