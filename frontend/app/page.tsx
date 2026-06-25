@@ -10,10 +10,10 @@ import { SearchBox } from "@/components/search-box";
 import { SiteHeader } from "@/components/site-header";
 
 const quickChoices = [
-  ["Sunset Park", "SJSW, Genspace, Craftsman Ave"],
+  ["Near UC Davis", "Davis, Woodland, Sacramento"],
+  ["Brooklyn", "SJSW, Newlab, NYC Resistor"],
   ["CNC + shops", "Routers, mills, waterjet, wood, metal"],
-  ["Classes", "Guided workshops and training"],
-  ["Student labs", "NYU, Pratt, City Tech, STEAM"],
+  ["Student labs", "UC Davis, SCC, NYU, Pratt"],
 ];
 
 export default function Home() {
@@ -29,23 +29,23 @@ export default function Home() {
         <div className="relative max-w-4xl animate-fade-up">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#172a20]/10 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#526057] shadow-sm">
             <span className="h-2 w-2 rounded-full bg-[#3f9766]" />
-            Brooklyn source-backed maker labs
+            Source-backed maker labs
           </span>
           <h1 className="mt-8 max-w-4xl text-[clamp(3.2rem,8vw,7.4rem)] font-black leading-[0.86] tracking-[-0.075em] text-[#172a20]">
-            Brooklyn shops
-            <span className="block text-[#df6f48]">for people who make.</span>
+            Find the shop
+            <span className="block text-[#df6f48]">that can make it.</span>
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-8 text-[#566259] sm:text-xl">
             Find maker labs, fab shops, hackerspaces, school labs, and guided
-            workshops across Brooklyn. Use your exact pin to see distance and
-            open driving or walking directions in Google Maps.
+            workshops by documented capability. Use your exact pin to see
+            distance and open driving or walking directions in Google Maps.
           </p>
         </div>
 
         <div className="relative mt-10 max-w-4xl">
           <SearchBox />
           <p className="mt-3 pl-3 text-xs font-semibold text-[#7c857e]">
-            Try “Brooklyn,” “Sunset Park,” “Industry City,” or “Brooklyn Navy Yard”
+            Try “UC Davis,” “Sacramento,” “Woodland,” “Brooklyn,” or “Sunset Park”
           </p>
         </div>
 
@@ -55,13 +55,13 @@ export default function Home() {
               Built for real trips
             </p>
             <h2 className="mt-4 max-w-xl text-3xl font-black leading-tight tracking-[-0.045em] sm:text-4xl">
-              Drop a pin, pick a space, then open the route.
+              Drop a pin, compare capability, then open the route.
             </h2>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {[
-                ["SJSW", "Sunset Park workshop pinned"],
+                ["18 places", "California plus Brooklyn"],
                 ["Google Maps", "Drive and walk links"],
-                ["25 miles", "Default Brooklyn radius"],
+                ["Source links", "Evidence for each claim"],
               ].map(([value, label]) => (
                 <div
                   className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10"
@@ -80,10 +80,12 @@ export default function Home() {
                 className="group flex min-h-40 flex-col justify-between rounded-[26px] border border-[#172a20]/10 bg-white p-5 transition hover:-translate-y-1 hover:border-[#df6f48]/50 hover:shadow-xl"
                 href={
                   index === 0
-                    ? "/results?location=Sunset+Park&radius=10&cnc=false&large=false"
+                    ? "/results?location=UC+Davis&radius=50&cnc=false&large=false"
                     : index === 1
-                      ? "/results?location=Brooklyn%2C+NY&radius=25&cnc=true&large=false"
-                      : "/results?location=Brooklyn%2C+NY&radius=25&cnc=false&large=false"
+                      ? "/results?location=Brooklyn%2C+NY&radius=25&cnc=false&large=false"
+                      : index === 2
+                        ? "/results?location=UC+Davis&radius=50&cnc=true&large=false"
+                        : "/results?location=UC+Davis&radius=50&cnc=false&large=false"
                 }
                 key={title}
               >
@@ -133,9 +135,9 @@ export default function Home() {
       </section>
 
       <footer className="mx-auto flex max-w-[1440px] flex-col gap-4 px-5 py-10 text-sm text-[#6f7972] sm:px-8 md:flex-row md:items-center md:justify-between">
-        <p>Maker Lab Map P · Brooklyn, New York</p>
+        <p>Maker Lab Map P</p>
         <Link className="inline-flex items-center gap-2 font-black text-[#172a20]" href="/results">
-          Browse Brooklyn labs
+          Browse maker labs
           <ArrowIcon className="h-4 w-4" />
         </Link>
       </footer>
