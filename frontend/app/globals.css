@@ -61,10 +61,133 @@ textarea {
   }
 }
 
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes marker-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.16);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes pin-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(47, 123, 255, 0.18);
+  }
+
+  50% {
+    box-shadow: 0 0 0 15px rgba(47, 123, 255, 0.06);
+  }
+}
+
+@keyframes map-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-18px, 10px, 0);
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+
+  to {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+
 .animate-float-soft {
   animation: float-soft 9s ease-in-out infinite;
 }
 
 .animate-fade-up {
   animation: fade-up 650ms ease-out both;
+}
+
+.animate-card-in {
+  animation: card-in 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-marker-pop {
+  animation: marker-pop 520ms cubic-bezier(0.18, 0.9, 0.28, 1.2);
+}
+
+.animate-pin-pulse {
+  animation: pin-pulse 1.9s ease-in-out infinite;
+}
+
+.animate-map-drift {
+  animation: map-drift 16s ease-in-out infinite;
+}
+
+.hover-lift {
+  transition:
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease,
+    background-color 260ms ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.sheen-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.sheen-on-hover::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  content: "";
+  inset: 0 auto 0 -45%;
+  position: absolute;
+  width: 42%;
+  transform: translateX(-120%) skewX(-18deg);
+}
+
+.sheen-on-hover:hover::after {
+  animation: sheen 780ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
 }
