@@ -11,7 +11,7 @@ type SearchBoxProps = {
 };
 
 export function SearchBox({
-  initialLocation = "Brooklyn, NY",
+  initialLocation = "UC Davis",
   compact = false,
 }: SearchBoxProps) {
   const router = useRouter();
@@ -21,7 +21,7 @@ export function SearchBox({
   function submit(event: FormEvent) {
     event.preventDefault();
     const params = new URLSearchParams({
-      location: location.trim() || "Brooklyn, NY",
+      location: location.trim() || "UC Davis",
       radius,
       cnc: "false",
       large: "false",
