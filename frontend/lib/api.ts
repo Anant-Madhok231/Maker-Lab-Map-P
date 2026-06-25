@@ -3,7 +3,8 @@ import { staticGetPlace, staticPlaces, staticSearchPlaces } from "@/lib/static-s
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const STATIC_EXPORT = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true";
+const STATIC_EXPORT =
+  process.env.NEXT_PUBLIC_STATIC_EXPORT === "true" || !process.env.NEXT_PUBLIC_API_URL;
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {

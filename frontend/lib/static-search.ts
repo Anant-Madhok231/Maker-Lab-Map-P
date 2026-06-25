@@ -1,646 +1,418 @@
-import type { Place, SearchResponse, SearchResult } from "@/lib/types";
+import { distanceMiles } from "@/lib/distance";
+import type { Equipment, Place, SearchResponse, SearchResult } from "@/lib/types";
 
-const fetchedAt = "2026-06-23T14:00:00Z";
+const fetchedAt = "2026-06-24T18:00:00Z";
 
 const localLocations = {
-  "uc davis": {
-    address: "University of California, Davis, Davis, CA",
-    lat: 38.5382,
-    lng: -121.7617,
-  },
-  davis: { address: "Davis, CA, USA", lat: 38.5449, lng: -121.7405 },
-  "davis ca": { address: "Davis, CA, USA", lat: 38.5449, lng: -121.7405 },
-  woodland: { address: "Woodland, CA, USA", lat: 38.6785, lng: -121.7733 },
-  "woodland ca": {
-    address: "Woodland, CA, USA",
-    lat: 38.6785,
-    lng: -121.7733,
-  },
-  sacramento: {
-    address: "Sacramento, CA, USA",
-    lat: 38.5816,
-    lng: -121.4944,
-  },
-  "sacramento ca": {
-    address: "Sacramento, CA, USA",
-    lat: 38.5816,
-    lng: -121.4944,
-  },
+  brooklyn: { address: "Brooklyn, NY, USA", lat: 40.6782, lng: -73.9442 },
+  "brooklyn ny": { address: "Brooklyn, NY, USA", lat: 40.6782, lng: -73.9442 },
+  "sunset park": { address: "Sunset Park, Brooklyn, NY, USA", lat: 40.6527, lng: -74.0093 },
+  "industry city": { address: "Industry City, Brooklyn, NY, USA", lat: 40.657, lng: -74.0067 },
+  "downtown brooklyn": { address: "Downtown Brooklyn, NY, USA", lat: 40.6928, lng: -73.9903 },
+  "brooklyn navy yard": { address: "Brooklyn Navy Yard, Brooklyn, NY, USA", lat: 40.6995, lng: -73.9716 },
+  gowanus: { address: "Gowanus, Brooklyn, NY, USA", lat: 40.6782, lng: -73.9928 },
+  "fort greene": { address: "Fort Greene, Brooklyn, NY, USA", lat: 40.6921, lng: -73.9742 },
 } as const;
 
-export const staticPlaces: Place[] = [
-  {
-    id: "ucd-design-makerspace",
-    name: "UC Davis Design Makerspace",
-    category: "university_makerspace",
-    description:
-      "Design fabrication labs in Cruess Hall with wood, metal, laser, 3D printing, and electronics equipment.",
-    address: "Cruess Hall, One Shields Avenue",
-    city: "Davis",
-    state: "CA",
-    postal_code: "95616",
-    lat: 38.5388,
-    lng: -121.7489,
-    website_url: "https://designmakerspace.ucdavis.edu/",
-    phone: null,
-    email: null,
-    access_type: "university",
-    access_notes:
-      "University design facilities; confirm course, training, and project eligibility before visiting.",
-    hours_text: "Hours vary by lab and academic schedule.",
-    business_status: "OPERATIONAL",
-    qualification_status: "verified_cnc_capable",
-    confidence_score: 98,
-    last_checked_at: fetchedAt,
+type EquipmentDraft = [
+  type: string,
+  name: string,
+  sourceUrl: string,
+  evidence: string,
+  options?: Partial<Equipment>,
+];
+
+type PlaceDraft = Omit<Place, "equipment" | "last_checked_at" | "business_status"> & {
+  equipment: EquipmentDraft[];
+};
+
+function makeEquipment(placeId: string, index: number, draft: EquipmentDraft): Equipment {
+  const [equipment_type, equipment_name, source_url, evidence_text, options] = draft;
+  return {
+    id: `${placeId}-${index + 1}`,
+    equipment_type,
+    equipment_name,
+    brand_or_model: null,
+    bed_width_in: null,
+    bed_length_in: null,
+    bed_height_in: null,
+    passes_48x48: false,
+    materials: [],
+    file_formats: [],
+    requires_training: null,
     staff_assisted: null,
-    public_access: false,
-    student_only: true,
-    member_only: false,
-    equipment: [
-      {
-        id: "ucd-cnc",
-        equipment_type: "cnc_router",
-        equipment_name: "CNC table",
-        brand_or_model: "Laguna Smartshop II",
-        bed_width_in: 48,
-        bed_length_in: 96,
-        bed_height_in: null,
-        passes_48x48: true,
-        materials: ["wood", "plywood", "sheet goods"],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text: "CNC table (4'x8\"): Laguna Smartshop II",
-        source_url: "https://designmakerspace.ucdavis.edu/woodshop.html",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.99,
-      },
-      {
-        id: "ucd-laser",
-        equipment_type: "laser_cutter",
-        equipment_name: "Universal Laser Cutter ILS 12.75",
-        brand_or_model: "Universal ILS 12.75",
-        bed_width_in: 24,
-        bed_length_in: 48,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: ["AI"],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text: 'Universal Laser Cutter ILS 12.75 (24"x 48")',
-        source_url: "https://designmakerspace.ucdavis.edu/equipment.html",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
-      {
-        id: "ucd-3d",
-        equipment_type: "3d_printer",
-        equipment_name: "3D printers",
-        brand_or_model: "Ultimaker 2+ family",
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: ["STL"],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "3D printers: Ultimaker 2+Connect, Ultimaker 2+, Ultimaker 2+ extended",
-        source_url: "https://designmakerspace.ucdavis.edu/equipment.html",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
-      {
-        id: "ucd-woodshop",
-        equipment_type: "woodshop",
-        equipment_name: "Woodshop",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: ["wood", "plywood"],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The official equipment page lists a SawStop, CNC table, sanders, miter saw, routers, bandsaw, and panel saw.",
-        source_url: "https://designmakerspace.ucdavis.edu/equipment.html",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
-    ],
-  },
-  {
-    id: "scc-makerspace",
-    name: "Sacramento City College Makerspace",
-    category: "university_makerspace",
-    description:
-      "A fabrication and prototyping space with large-format CNC, laser, 3D printing, textiles, and electronics.",
-    address: "3835 Freeport Boulevard",
-    city: "Sacramento",
-    state: "CA",
-    postal_code: "95822",
-    lat: 38.5419,
-    lng: -121.4854,
-    website_url: "https://scc.losrios.edu/student-resources/makerspace",
-    phone: null,
-    email: "makerspace@scc.losrios.edu",
-    access_type: "students_faculty_staff",
-    access_notes:
-      "Free and open to currently enrolled SCC students, faculty, and staff.",
-    hours_text: "Spring: Monday 10–4; Tuesday–Thursday 10–7.",
+    self_service: null,
+    reservation_required: null,
+    evidence_text,
+    source_url,
+    source_type: "official_website",
+    fetched_at: fetchedAt,
+    confidence: 0.92,
+    ...options,
+  };
+}
+
+function makePlace(draft: PlaceDraft): Place {
+  return {
+    ...draft,
     business_status: "OPERATIONAL",
-    qualification_status: "verified_cnc_capable",
-    confidence_score: 97,
     last_checked_at: fetchedAt,
+    equipment: draft.equipment.map((item, index) => makeEquipment(draft.id, index, item)),
+  };
+}
+
+export const staticPlaces: Place[] = [
+  makePlace({
+    id: "sjsw-st-joseph-studio-workshop",
+    name: "SJSW — St. Joseph Studio Workshop",
+    category: "community_design_workshop",
+    description: "Sunset Park nonprofit design studio, workshop, and design lab focused on making, experimentation, technical training, and youth/community workshops.",
+    address: "67 35th Street, Unit C251",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11232",
+    lat: 40.6569405,
+    lng: -74.0069057,
+    website_url: "https://sjsw.org/",
+    phone: "+1 (347) 350-4084",
+    email: "info@sjsw.org",
+    access_type: "contact_first",
+    access_notes: "Contact SJSW before visiting. The workshop is listed at Industry City, Building 5, Unit C251.",
+    hours_text: "Tuesday–Friday, 10:00 AM–5:00 PM.",
+    qualification_status: "strong_match",
+    confidence_score: 98,
     staff_assisted: true,
-    public_access: false,
-    student_only: true,
+    public_access: null,
+    student_only: false,
     member_only: false,
     equipment: [
-      {
-        id: "scc-cnc",
-        equipment_type: "cnc_router",
-        equipment_name: "CNC Router",
-        brand_or_model: null,
-        bed_width_in: 48,
-        bed_length_in: 96,
-        bed_height_in: null,
-        passes_48x48: true,
-        materials: ["wood", "sheet goods"],
-        file_formats: ["3D file formats"],
-        requires_training: true,
-        staff_assisted: true,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The Fabrication and Prototyping Space equipment includes a 4’ x 8’ CNC Router.",
-        source_url: "https://scc.losrios.edu/student-resources/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.99,
-      },
-      {
-        id: "scc-laser",
-        equipment_type: "laser_cutter",
-        equipment_name: "Universal Systems Laser Cutter",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: ["wood", "acrylic", "card stock", "fabric", "paper"],
-        file_formats: ["PDF", "DXF", "SVG"],
-        requires_training: true,
-        staff_assisted: true,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The Fabrication and Prototyping Space equipment includes a Universal Systems Laser Cutter.",
-        source_url: "https://scc.losrios.edu/student-resources/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
-      {
-        id: "scc-vacuum",
-        equipment_type: "vacuum_former",
-        equipment_name: "Vacuum Former",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: true,
-        self_service: null,
-        reservation_required: null,
-        evidence_text: "The official SCC equipment list includes a Vacuum Former.",
-        source_url: "https://scc.losrios.edu/student-resources/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
-      {
-        id: "scc-3d",
-        equipment_type: "3d_printer",
-        equipment_name: "3D printers",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: ["STL"],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The Flex Space equipment list includes a Formlabs Form 2 SLA printer and eight 3D printers.",
-        source_url: "https://scc.losrios.edu/student-resources/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
-      {
-        id: "scc-electronics",
-        equipment_type: "electronics",
-        equipment_name: "Electronics and soldering tools",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The Flex Space equipment list includes electronics, soldering guns, and Arduinos.",
-        source_url: "https://scc.losrios.edu/student-resources/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
+      ["design_lab", "Design studio and workshop", "https://sjsw.org/", "SJSW describes itself as a studio, workshop, and design lab that designs, makes, and experiments.", { confidence: 0.98, staff_assisted: true }],
+      ["training", "Technical training and youth workshops", "https://sjsw.org/", "The official site lists Technical Training and Youth Engagement Workshops as services.", { confidence: 0.98, staff_assisted: true }],
+      ["cnc_router", "Workshop CNC capability", "https://sjsw.org/tag/sjsw/", "An SJSW post describes receiving a BCAMCNC machine and preparing to teach others how to use it.", { confidence: 0.82, requires_training: true, staff_assisted: true }],
     ],
-  },
-  {
-    id: "yololab",
-    name: "Yolo County Library yololab",
-    category: "library_makerspace",
-    description:
-      "A public-library makerspace for guided and independent learning, workshops, and repair cafés.",
-    address: "315 E. 14th Street",
-    city: "Davis",
-    state: "CA",
-    postal_code: "95616",
-    lat: 38.5566,
-    lng: -121.7388,
-    website_url: "https://yolocountylibrary.org/yololab/",
+  }),
+  makePlace({
+    id: "makerspace-nyc-brooklyn-army-terminal",
+    name: "MakerSpace NYC — Brooklyn Army Terminal",
+    category: "community_makerspace",
+    description: "Large public/member makerspace at Brooklyn Army Terminal with industrial workspaces, classes, shops, and fabrication equipment.",
+    address: "140 58th Street, Building B, Unit 1C",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11220",
+    lat: 40.6456748,
+    lng: -74.0250124,
+    website_url: "https://www.makerspace.nyc/",
     phone: null,
     email: null,
-    access_type: "library_card",
-    access_notes:
-      "Requires an active Yolo County Library card and completed registration packet.",
-    hours_text: "Monday 6–8; Tuesday 6–8; Thursday 9:30–11:30; Friday 3–5.",
-    business_status: "OPERATIONAL",
-    qualification_status: "possible_match_needs_verification",
-    confidence_score: 63,
-    last_checked_at: fetchedAt,
+    access_type: "membership_classes_day_pass",
+    access_notes: "Offers memberships, classes, studio space, and day-pass style access; check current class and shop requirements before going.",
+    hours_text: "Shop hours vary by day; check the current MakerSpace NYC calendar before visiting.",
+    qualification_status: "verified_cnc_capable",
+    confidence_score: 96,
     staff_assisted: true,
     public_access: true,
     student_only: false,
     member_only: true,
     equipment: [
-      {
-        id: "yolo-3d",
-        equipment_type: "3d_printer",
-        equipment_name: "3D Printers",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: true,
-        reservation_required: null,
-        evidence_text: "The official yololab equipment list links to 3D Printers.",
-        source_url: "https://yolocountylibrary.org/yololab/",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.95,
-      },
-      {
-        id: "yolo-vinyl",
-        equipment_type: "vinyl_cutter",
-        equipment_name: "Cricut",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: true,
-        reservation_required: null,
-        evidence_text: "The official yololab equipment list links to Cricut equipment.",
-        source_url: "https://yolocountylibrary.org/yololab/",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.95,
-      },
+      ["cnc_router", "CNC equipment", "https://www.makerspace.nyc/", "The official homepage lists CNC among its industrial equipment.", { confidence: 0.96, requires_training: true, staff_assisted: true, passes_48x48: true }],
+      ["waterjet", "Waterjet", "https://www.makerspace.nyc/", "The official homepage lists waterjet equipment.", { confidence: 0.95, requires_training: true, staff_assisted: true }],
+      ["woodshop", "Woodshop", "https://www.makerspace.nyc/studios", "The studio page lists access to onsite wood shop space and equipment.", { confidence: 0.95, requires_training: true }],
+      ["metal_shop", "Metal shop, welding, and blacksmithing", "https://www.makerspace.nyc/", "The official homepage lists welding, blacksmithing, and industrial shop access.", { confidence: 0.96, requires_training: true }],
+      ["3d_printer", "3D printing", "https://www.makerspace.nyc/", "The official homepage lists 3D printing classes and equipment access.", { confidence: 0.95, requires_training: true }],
+      ["sewing", "Sewing and textiles", "https://www.makerspace.nyc/", "The official homepage lists sewing among the skills and shop offerings.", { confidence: 0.94, requires_training: true }],
+      ["ceramics", "Pottery and ceramics", "https://www.makerspace.nyc/", "The official homepage lists pottery throwing among its class offerings.", { confidence: 0.92, requires_training: true }],
     ],
-  },
-  {
-    id: "ucd-prototyping-lab",
-    name: "UC Davis Prototyping Lab",
-    category: "university_makerspace",
-    description:
-      "A design-student lab for laser cutting, 3D printing, and electronics coursework.",
-    address: "Cruess Hall, Room 1102, One Shields Avenue",
-    city: "Davis",
-    state: "CA",
-    postal_code: "95616",
-    lat: 38.5387,
-    lng: -121.7487,
-    website_url: "https://arts.ucdavis.edu/prototyping-lab",
-    phone: "(530) 752-0105",
-    email: "mlrojasvaldez@ucdavis.edu",
-    access_type: "design_students",
-    access_notes:
-      "Reserved for design classes and coursework; required training must be completed first.",
-    hours_text: "M/W/F 9–5; T/Th 9–7, subject to the academic schedule.",
-    business_status: "OPERATIONAL",
+  }),
+  makePlace({
+    id: "nyc-resistor",
+    name: "NYC Resistor",
+    category: "hackerspace",
+    description: "Downtown Brooklyn community hackerspace for electronics, code, laser cutting, 3D printing, talks, and hands-on open nights.",
+    address: "87 3rd Avenue, 4th Floor",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11217",
+    lat: 40.6835887,
+    lng: -73.9816241,
+    website_url: "https://www.nycresistor.com/",
+    phone: null,
+    email: null,
+    access_type: "membership_events_classes",
+    access_notes: "Community space with memberships, classes, and public events; check the event calendar for open nights and class access.",
+    hours_text: "Event and class based; check the NYC Resistor calendar.",
     qualification_status: "strong_match",
-    confidence_score: 88,
-    last_checked_at: fetchedAt,
+    confidence_score: 94,
+    staff_assisted: false,
+    public_access: true,
+    student_only: false,
+    member_only: true,
+    equipment: [
+      ["laser_cutter", "Laser cutter", "https://www.nycresistor.com/", "NYC Resistor publishes laser cutter classes and describes itself as a Brooklyn makerspace.", { confidence: 0.93, requires_training: true }],
+      ["3d_printer", "3D printing station", "https://www.nycresistor.com/", "NYC Resistor materials reference member/shared 3D printing access.", { confidence: 0.9, requires_training: true }],
+      ["electronics", "Electronics benches", "https://www.nycresistor.com/", "The hackerspace focuses on learning, sharing, electronics, code, and making projects.", { confidence: 0.9 }],
+    ],
+  }),
+  makePlace({
+    id: "genspace-community-biolab",
+    name: "Genspace",
+    category: "community_bio_lab",
+    description: "Sunset Park community biology lab where people learn and work on biotechnology through classes, membership, and guided lab projects.",
+    address: "132 32nd Street, Suite 108",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11232",
+    lat: 40.6568049,
+    lng: -74.0029213,
+    website_url: "https://www.genspace.org/",
+    phone: "+1 (929) 387-8100",
+    email: "info@genspace.org",
+    access_type: "classes_membership_appointment",
+    access_notes: "Visits are by appointment. Lab projects require training, classes, membership, or prior biology experience depending on the program.",
+    hours_text: "By appointment and scheduled programming.",
+    qualification_status: "strong_match",
+    confidence_score: 96,
+    staff_assisted: true,
+    public_access: true,
+    student_only: false,
+    member_only: true,
+    equipment: [
+      ["bio_lab", "Community biology lab", "https://www.genspace.org/", "The official site calls Genspace the world's first community biology lab.", { confidence: 0.97, requires_training: true, staff_assisted: true }],
+      ["training", "Biotech classes and project training", "https://www.genspace.org/join-the-lab", "Genspace lists classes, membership, and community bio safety expectations.", { confidence: 0.95, requires_training: true, staff_assisted: true }],
+    ],
+  }),
+  makePlace({
+    id: "newlab-brooklyn",
+    name: "Newlab Brooklyn",
+    category: "professional_prototyping_hub",
+    description: "Brooklyn Navy Yard startup and prototyping hub with workshops, labs, product-realization support, and pilot-site access.",
+    address: "Brooklyn Navy Yard, Building 128",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11205",
+    lat: 40.6996,
+    lng: -73.9718,
+    website_url: "https://www.newlab.com/locations/brooklyn",
+    phone: null,
+    email: null,
+    access_type: "member_startup_platform",
+    access_notes: "Primarily for member companies and teams using Newlab's workspace, labs, and product-realization support.",
+    hours_text: "Flexible 24/7+365 member access is listed for the Brooklyn location.",
+    qualification_status: "strong_match",
+    confidence_score: 95,
+    staff_assisted: true,
+    public_access: false,
+    student_only: false,
+    member_only: true,
+    equipment: [
+      ["rapid_prototyping", "Rapid prototyping", "https://www.newlab.com/locations/brooklyn", "Newlab lists state-of-the-art prototyping equipment and an onsite product-realization team.", { confidence: 0.96, staff_assisted: true }],
+      ["bio_lab", "Biolab", "https://www.newlab.com/locations/brooklyn", "Newlab's Brooklyn product-realization list includes a biolab.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["metal_shop", "Metals and plastics workshop", "https://www.newlab.com/locations/brooklyn", "Newlab's Brooklyn list includes a metals/plastics workshop.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["3d_printer", "FDM 3D printing", "https://www.newlab.com/locations/brooklyn", "Newlab's Brooklyn list includes FDM 3D printing.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["electronics", "Electronics lab", "https://www.newlab.com/locations/brooklyn", "Newlab's Brooklyn list includes an electronics lab.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["sewing", "Textiles lab", "https://www.newlab.com/locations/brooklyn", "Newlab's Brooklyn list includes a textiles lab.", { confidence: 0.93, requires_training: true, staff_assisted: true }],
+      ["woodshop", "Wood shop", "https://www.newlab.com/locations/brooklyn", "Newlab's Brooklyn list includes a wood shop.", { confidence: 0.93, requires_training: true, staff_assisted: true }],
+    ],
+  }),
+  makePlace({
+    id: "nyu-tandon-makerspace",
+    name: "NYU Tandon MakerSpace",
+    category: "university_makerspace",
+    description: "NYU Tandon's Downtown Brooklyn makerspace with advanced software, milling, 3D printing, rapid prototyping, and integrated manufacturing facilities.",
+    address: "6 MetroTech Center, Jacobs Hall, Room 118",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11201",
+    lat: 40.694542,
+    lng: -73.9867908,
+    website_url: "https://engineering.nyu.edu/life-tandon/makerspace",
+    phone: null,
+    email: "tandon-makerspace@nyu.edu",
+    access_type: "nyu_students_faculty_staff",
+    access_notes: "Free for NYU students, faculty, and staff after required trainings and reservations.",
+    hours_text: "Academic schedule varies; check NYU MakerSpace hours before visiting.",
+    qualification_status: "strong_match",
+    confidence_score: 95,
     staff_assisted: true,
     public_access: false,
     student_only: true,
     member_only: false,
     equipment: [
-      {
-        id: "proto-laser",
-        equipment_type: "laser_cutter",
-        equipment_name: "Universal Laser Cutters",
-        brand_or_model: null,
-        bed_width_in: 24,
-        bed_length_in: 48,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: ["AI"],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text: "Laser Cutters: Universal (32” × 18”) and (48” × 24”).",
-        source_url: "https://arts.ucdavis.edu/prototyping-lab",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.99,
-      },
-      {
-        id: "proto-3d",
-        equipment_type: "3d_printer",
-        equipment_name: "3D printers",
-        brand_or_model: "Ultimaker 2+ Connect and Bambu Lab X1 Carbon",
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: ["STL"],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text: "3D printers: Ultimaker 2+ Connect | Bambu Lab X1 Carbon.",
-        source_url: "https://arts.ucdavis.edu/prototyping-lab",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.99,
-      },
-      {
-        id: "proto-electronics",
-        equipment_type: "electronics",
-        equipment_name: "Soldering iron",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text: "The official equipment list includes a soldering iron.",
-        source_url: "https://arts.ucdavis.edu/prototyping-lab",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.98,
-      },
+      ["cnc_mill", "Milling machines", "https://engineering.nyu.edu/life-tandon/makerspace", "NYU Tandon lists tools from advanced software and milling machines to 3D printers.", { confidence: 0.95, requires_training: true, staff_assisted: true }],
+      ["3d_printer", "3D printers", "https://makerspace.engineering.nyu.edu/machines/", "NYU MakerSpace's machine list includes 3D printers.", { confidence: 0.95, requires_training: true }],
+      ["laser_cutter", "Laser cutters", "https://makerspace.engineering.nyu.edu/machines/", "NYU MakerSpace's machine list includes laser cutters.", { confidence: 0.94, requires_training: true }],
+      ["electronics", "PCB and electronics tools", "https://makerspace.engineering.nyu.edu/machines/", "NYU MakerSpace's list includes PCB construction and related shop tools.", { confidence: 0.92, requires_training: true }],
     ],
-  },
-  {
-    id: "ucd-tech-foundry",
-    name: "UC Davis Tech Foundry",
-    category: "commercial_fabrication_shop",
-    description:
-      "A university device-development facility that designs and manufactures research and prototype devices.",
-    address: "451 Health Sciences Drive",
-    city: "Davis",
-    state: "CA",
-    postal_code: "95616",
-    lat: 38.5344,
-    lng: -121.7647,
-    website_url: "https://bme.ucdavis.edu/about/tech-foundry",
+  }),
+  makePlace({
+    id: "nyu-makergarage",
+    name: "NYU MakerGarage",
+    category: "university_makerspace",
+    description: "NYU Tandon companion makerspace at 325 Gold Street, tied to the campus maker ecosystem and project prototyping.",
+    address: "325 Gold Street, 2nd Floor",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11201",
+    lat: 40.6945308,
+    lng: -73.9831384,
+    website_url: "https://engineering.nyu.edu/life-tandon/makerspace",
     phone: null,
-    email: null,
-    access_type: "service",
-    access_notes:
-      "Supports UC Davis faculty, private companies, and individuals through a service model.",
-    hours_text: "Contact the Tech Foundry for project intake and scheduling.",
-    business_status: "OPERATIONAL",
+    email: "tandon-makerspace@nyu.edu",
+    access_type: "nyu_students_faculty_staff",
+    access_notes: "NYU campus access; the MakerGarage is listed as a second floor space at 325 Gold Street and may operate by request.",
+    hours_text: "Academic schedule varies; check NYU MakerSpace hours before visiting.",
     qualification_status: "strong_match",
-    confidence_score: 82,
-    last_checked_at: fetchedAt,
+    confidence_score: 90,
+    staff_assisted: true,
+    public_access: false,
+    student_only: true,
+    member_only: false,
+    equipment: [["rapid_prototyping", "Project prototyping space", "https://engineering.nyu.edu/life-tandon/makerspace", "NYU lists MakerGarage as part of the MakerSpace ecosystem at 325 Gold Street.", { confidence: 0.9, staff_assisted: true }]],
+  }),
+  makePlace({
+    id: "craftsman-ave",
+    name: "Craftsman Ave",
+    category: "hands_on_workshop",
+    description: "Industry City workshop studio offering guided classes in woodworking, welding, knife making, leatherwork, stained glass, and more.",
+    address: "68 34th Street, Building 6, 1st Floor, Suite B124",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11232",
+    lat: 40.6571256,
+    lng: -74.0064921,
+    website_url: "https://craftsmanave.com/",
+    phone: "+1 (929) 266-3494",
+    email: null,
+    access_type: "ticketed_workshops",
+    access_notes: "Access is through paid guided workshops/classes rather than open independent shop use.",
+    hours_text: "Workshop schedule varies; check the calendar for current classes.",
+    qualification_status: "strong_match",
+    confidence_score: 94,
     staff_assisted: true,
     public_access: true,
     student_only: false,
     member_only: false,
     equipment: [
-      {
-        id: "foundry-cnc",
-        equipment_type: "cnc_mill",
-        equipment_name: "Computer numerical control mills",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: null,
-        staff_assisted: true,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The Aggie Square facility features modern 3D printers and computer numerical control mills.",
-        source_url: "https://bme.ucdavis.edu/about/tech-foundry",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.96,
-      },
-      {
-        id: "foundry-3d",
-        equipment_type: "3d_printer",
-        equipment_name: "Modern 3D printers",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: null,
-        staff_assisted: true,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The Aggie Square facility features modern 3D printers and computer numerical control mills.",
-        source_url: "https://bme.ucdavis.edu/about/tech-foundry",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.96,
-      },
+      ["woodshop", "Woodworking workshops", "https://craftsmanave.com/", "Craftsman Ave lists woodworking workshops taught by experienced makers.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["metal_shop", "Welding and knife making", "https://craftsmanave.com/", "Craftsman Ave lists welding and knife making classes.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["leatherwork", "Leather-working", "https://craftsmanave.com/", "Craftsman Ave lists leather-working workshops.", { confidence: 0.93, requires_training: true, staff_assisted: true }],
+      ["stained_glass", "Stained glass", "https://craftsmanave.com/", "Craftsman Ave lists stained glass workshops.", { confidence: 0.93, requires_training: true, staff_assisted: true }],
     ],
-  },
-  {
-    id: "sac-state-stingerstudio",
-    name: "Sac State StingerStudio Makerspace",
-    category: "university_makerspace",
-    description:
-      "A university-library makerspace with CNC, 3D printing, laser/vinyl cutting, sewing, and electronics.",
-    address: "2000 State University Drive",
-    city: "Sacramento",
-    state: "CA",
-    postal_code: "95819",
-    lat: 38.5592,
-    lng: -121.4235,
-    website_url: "https://library.csus.edu/makerspace",
+  }),
+  makePlace({
+    id: "powerhouse-arts",
+    name: "Powerhouse Arts",
+    category: "arts_fabrication_hub",
+    description: "Gowanus nonprofit creative production center with fabrication studios, artist programs, community workshops, exhibitions, and rentals.",
+    address: "322 3rd Avenue",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11215",
+    lat: 40.6763323,
+    lng: -73.9882201,
+    website_url: "https://powerhousearts.org/",
+    phone: "+1 (718) 522-1400",
+    email: "info@powerhousearts.org",
+    access_type: "programs_rentals_workshops",
+    access_notes: "Access depends on public programs, classes, artist services, rentals, and partnerships; not an open drop-in makerspace.",
+    hours_text: "Weekdays 9:00 AM–7:30 PM; weekends 10:00 AM–6:00 PM.",
+    qualification_status: "strong_match",
+    confidence_score: 91,
+    staff_assisted: true,
+    public_access: true,
+    student_only: false,
+    member_only: false,
+    equipment: [
+      ["arts_fabrication", "Fabrication studios", "https://powerhousearts.org/", "Powerhouse Arts describes a Brooklyn arts facility and fabrication hub with fabrication studios and community workshops.", { confidence: 0.91, staff_assisted: true }],
+      ["training", "Classes and workshops", "https://powerhousearts.org/contact", "The contact page lists classes and workshops contact information and public hours.", { confidence: 0.9, staff_assisted: true }],
+    ],
+  }),
+  makePlace({
+    id: "pratt-makerspaces-and-labs",
+    name: "Pratt Institute Makerspaces and Labs",
+    category: "university_labs",
+    description: "Pratt's Brooklyn campus shops, labs, and studios for design, architecture, laser cutting, materials, and student making.",
+    address: "200 Willoughby Avenue",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11205",
+    lat: 40.6913383,
+    lng: -73.9630163,
+    website_url: "https://www.pratt.edu/academics/makerspaces-and-labs/",
     phone: null,
     email: null,
-    access_type: "university",
-    access_notes:
-      "Software and support information is directed to the Sacramento State community; verify visitor access.",
-    hours_text: "See the current library makerspace schedule.",
-    business_status: "OPERATIONAL",
-    qualification_status: "possible_match_needs_verification",
-    confidence_score: 72,
-    last_checked_at: fetchedAt,
+    access_type: "pratt_students_faculty_staff",
+    access_notes: "Pratt campus labs are primarily for Pratt students, faculty, and approved academic work.",
+    hours_text: "Academic lab hours vary by shop and semester.",
+    qualification_status: "strong_match",
+    confidence_score: 92,
     staff_assisted: true,
-    public_access: null,
+    public_access: false,
     student_only: true,
     member_only: false,
     equipment: [
-      {
-        id: "stinger-cnc",
-        equipment_type: "cnc_router",
-        equipment_name: "CNC Router",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: true,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The official equipment page says its CNC machine can create signs, plaques, topology maps, and complex shapes.",
-        source_url: "https://library.csus.edu/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.96,
-      },
-      {
-        id: "stinger-laser",
-        equipment_type: "laser_cutter",
-        equipment_name: "Laser Cutter",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: true,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The official page says its laser cutter can etch designs or cut shapes from a range of materials.",
-        source_url: "https://library.csus.edu/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.96,
-      },
-      {
-        id: "stinger-3d",
-        equipment_type: "3d_printer",
-        equipment_name: "3D Printers",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: ["3D model"],
-        requires_training: null,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The official equipment page lists 3D printers that construct objects from a digital model.",
-        source_url: "https://library.csus.edu/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.96,
-      },
-      {
-        id: "stinger-sewing",
-        equipment_type: "sewing",
-        equipment_name: "Sewing and embroidery machines",
-        brand_or_model: null,
-        bed_width_in: null,
-        bed_length_in: null,
-        bed_height_in: null,
-        passes_48x48: false,
-        materials: [],
-        file_formats: [],
-        requires_training: null,
-        staff_assisted: null,
-        self_service: null,
-        reservation_required: null,
-        evidence_text:
-          "The official page lists manual sewing machines and programmable digital embroidery devices.",
-        source_url: "https://library.csus.edu/makerspace",
-        source_type: "official_website",
-        fetched_at: fetchedAt,
-        confidence: 0.96,
-      },
+      ["laser_cutter", "Laser Lab", "https://www.pratt.edu/design/homepage/school-of-design-labs-and-studios/", "Pratt's School of Design says the Laser Lab contains six laser cutters.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["woodshop", "Shops, labs, and studios", "https://www.pratt.edu/academics/makerspaces-and-labs/", "Pratt says its shops, labs, and studios offer space, tools, and resources for making.", { confidence: 0.9, requires_training: true, staff_assisted: true }],
     ],
-  },
+  }),
+  makePlace({
+    id: "city-tech-arch-fab-labs",
+    name: "City Tech Architectural Technology Fabrication Labs",
+    category: "college_fabrication_lab",
+    description: "CUNY City Tech academic fabrication labs supporting laser cutting, 3D printing, CNC machining, scanning, and architectural prototypes.",
+    address: "186 Jay Street",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11201",
+    lat: 40.6990375,
+    lng: -73.9873826,
+    website_url: "https://www.citytech.cuny.edu/architecture/technology.aspx",
+    phone: null,
+    email: null,
+    access_type: "city_tech_students_faculty",
+    access_notes: "Academic support labs for City Tech Architectural Technology students and coursework.",
+    hours_text: "Academic lab hours vary by semester.",
+    qualification_status: "strong_match",
+    confidence_score: 93,
+    staff_assisted: true,
+    public_access: false,
+    student_only: true,
+    member_only: false,
+    equipment: [
+      ["laser_cutter", "Laser cutting", "https://www.citytech.cuny.edu/architecture/technology.aspx", "City Tech lists laser cutting among the fabrication strategies taught in the labs.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["3d_printer", "3D printing", "https://www.citytech.cuny.edu/architecture/technology.aspx", "City Tech lists 3D printing among the fabrication strategies taught in the labs.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["cnc_mill", "CNC machining", "https://www.citytech.cuny.edu/architecture/technology.aspx", "City Tech lists CNC machining among the fabrication strategies taught in the labs.", { confidence: 0.94, requires_training: true, staff_assisted: true }],
+      ["3d_scanning", "3D scanning and digitizing", "https://www.citytech.cuny.edu/architecture/technology.aspx", "City Tech lists 3D scanning and digitizing among the fabrication lab capabilities.", { confidence: 0.93, requires_training: true, staff_assisted: true }],
+    ],
+  }),
+  makePlace({
+    id: "brooklyn-steam-center",
+    name: "Brooklyn STEAM Center",
+    category: "career_technical_education",
+    description: "Brooklyn Navy Yard career and technical education center with design, engineering, manufacturing, multimedia, and hands-on industry pathways.",
+    address: "141 Flushing Avenue, Building 77, Suite 301",
+    city: "Brooklyn",
+    state: "NY",
+    postal_code: "11205",
+    lat: 40.6985851,
+    lng: -73.9711478,
+    website_url: "https://steamcenter.nyc/locations/",
+    phone: "+1 (347) 464-3680",
+    email: "Info@BrooklynSTEAMcenter.org",
+    access_type: "partner_high_school_students",
+    access_notes: "Restricted to students from partner high schools through Brooklyn STEAM Center programs.",
+    hours_text: "School program schedule.",
+    qualification_status: "strong_match",
+    confidence_score: 90,
+    staff_assisted: true,
+    public_access: false,
+    student_only: true,
+    member_only: false,
+    equipment: [
+      ["industrial_design", "Design and engineering pathway", "https://steamcenter.nyc/locations/", "The STEAM Center is listed at Building 77 and offers career-focused hands-on pathways.", { confidence: 0.9, requires_training: true, staff_assisted: true }],
+      ["training", "Career and technical training", "https://brooklynsteamcenter.org/", "Brooklyn STEAM Center describes industry-informed experiences that empower students.", { confidence: 0.88, requires_training: true, staff_assisted: true }],
+    ],
+  }),
 ];
 
 type StaticFilters = {
@@ -658,20 +430,10 @@ function normalizeLocation(location: string) {
 }
 
 function resolveLocation(location: string) {
-  return localLocations[normalizeLocation(location) as keyof typeof localLocations] || localLocations["uc davis"];
-}
-
-function distanceMiles(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const earthRadiusMiles = 3958.8;
-  const latDelta = ((lat2 - lat1) * Math.PI) / 180;
-  const lngDelta = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(latDelta / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(lngDelta / 2) ** 2;
-
-  return earthRadiusMiles * 2 * Math.asin(Math.sqrt(a));
+  return (
+    localLocations[normalizeLocation(location) as keyof typeof localLocations] ||
+    localLocations.brooklyn
+  );
 }
 
 function hasEquipment(place: Place, equipmentType: string) {
@@ -682,35 +444,26 @@ function hasLargeCnc(place: Place, width: number, length: number) {
   return place.equipment.some(
     (item) =>
       item.equipment_type === "cnc_router" &&
-      item.bed_width_in !== null &&
-      item.bed_length_in !== null &&
-      Math.min(item.bed_width_in, item.bed_length_in) >= Math.min(width, length) &&
-      Math.max(item.bed_width_in, item.bed_length_in) >= Math.max(width, length),
+      item.passes_48x48 &&
+      (item.bed_width_in === null ||
+        item.bed_length_in === null ||
+        (Math.min(item.bed_width_in, item.bed_length_in) >= Math.min(width, length) &&
+          Math.max(item.bed_width_in, item.bed_length_in) >= Math.max(width, length))),
   );
 }
 
 function passesFilters(place: Place, filters: StaticFilters) {
-  if (filters.public_access !== null && place.public_access !== filters.public_access) {
-    return false;
-  }
-  if (filters.staff_assisted !== null && place.staff_assisted !== filters.staff_assisted) {
-    return false;
-  }
+  if (filters.public_access !== null && place.public_access !== filters.public_access) return false;
+  if (filters.staff_assisted !== null && place.staff_assisted !== filters.staff_assisted) return false;
 
   const requestedTypes = new Set(filters.equipment_types);
   if (filters.cnc_router) requestedTypes.add("cnc_router");
-  if (requestedTypes.size > 0) {
-    const allEquipmentMatches = [...requestedTypes].every((type) => hasEquipment(place, type));
-    if (!allEquipmentMatches) {
-      return filters.show_maybe_matches && place.qualification_status.startsWith("possible");
-    }
+  if (requestedTypes.size > 0 && ![...requestedTypes].every((type) => hasEquipment(place, type))) {
+    return false;
   }
 
   if (filters.min_bed_width_in && filters.min_bed_length_in) {
-    const hasCapacity = hasLargeCnc(place, filters.min_bed_width_in, filters.min_bed_length_in);
-    if (!hasCapacity) {
-      return filters.show_maybe_matches && place.qualification_status.startsWith("possible");
-    }
+    return hasLargeCnc(place, filters.min_bed_width_in, filters.min_bed_length_in);
   }
 
   return true;
@@ -723,43 +476,39 @@ function rankPlace(
   radiusMiles: number,
   filters: StaticFilters,
 ): SearchResult {
-  const distance = distanceMiles(centerLat, centerLng, place.lat, place.lng);
+  const distance = distanceMiles({ lat: centerLat, lng: centerLng }, { lat: place.lat, lng: place.lng });
   const distanceScore = Math.max(0, 100 * (1 - distance / Math.max(radiusMiles, 1)));
-
   const requestedTypes = new Set(filters.equipment_types);
   if (filters.cnc_router) requestedTypes.add("cnc_router");
+
   const equipmentScore =
     requestedTypes.size > 0
-      ? (100 * [...requestedTypes].filter((type) => hasEquipment(place, type)).length) /
-        requestedTypes.size
-      : Math.min(100, place.equipment.length * 20);
+      ? (100 * [...requestedTypes].filter((type) => hasEquipment(place, type)).length) / requestedTypes.size
+      : Math.min(100, place.equipment.length * 17);
+  const accessScore = place.public_access ? 100 : place.public_access === null ? 58 : 42;
+  const sjswBoost = place.id === "sjsw-st-joseph-studio-workshop" ? 8 : 0;
 
-  const capacityRequired = Boolean(filters.min_bed_width_in && filters.min_bed_length_in);
-  const capacityPasses = capacityRequired
-    ? hasLargeCnc(place, filters.min_bed_width_in || 48, filters.min_bed_length_in || 48)
-    : place.equipment.some((item) => item.passes_48x48);
-  const capacityScore = capacityPasses ? 100 : hasEquipment(place, "cnc_router") ? 20 : 0;
-  const accessScore = place.public_access ? 100 : place.access_type !== "unknown" ? 72 : 25;
-
-  const whyMatched: string[] = [];
-  if (capacityPasses) whyMatched.push("Confirmed CNC work area meets the requested sheet size");
-  if (hasEquipment(place, "cnc_router")) whyMatched.push("Official source confirms a CNC router");
-  if (place.staff_assisted) whyMatched.push("Staff-assisted fabrication is available");
-  if (place.public_access) whyMatched.push("Public or member access is clearly explained");
-  if (whyMatched.length === 0) whyMatched.push("Relevant fabrication equipment is documented");
+  const why_matched: string[] = [];
+  if (place.id === "sjsw-st-joseph-studio-workshop") {
+    why_matched.push("Featured Sunset Park workshop from SJSW.org with exact Industry City address.");
+  }
+  if (hasEquipment(place, "cnc_router")) why_matched.push("Source-backed CNC or router capability is listed.");
+  if (place.staff_assisted) why_matched.push("Staff, instructors, or guided support are part of the access model.");
+  if (place.public_access) why_matched.push("Public, class, event, or member access is clearly described.");
+  if (why_matched.length === 0) why_matched.push("Relevant Brooklyn maker capability is documented by source links.");
 
   const finalScore =
     0.25 * distanceScore +
     0.3 * equipmentScore +
-    0.2 * capacityScore +
     0.15 * accessScore +
-    0.1 * place.confidence_score;
+    0.22 * place.confidence_score +
+    sjswBoost;
 
   return {
     ...place,
     distance_miles: Math.round(distance * 10) / 10,
     final_score: Math.round(finalScore * 10) / 10,
-    why_matched: whyMatched,
+    why_matched,
   };
 }
 
@@ -770,11 +519,9 @@ export function staticSearchPlaces(payload: {
 }): SearchResponse {
   const center = resolveLocation(payload.location);
   const results = staticPlaces
-    .filter((place) => distanceMiles(center.lat, center.lng, place.lat, place.lng) <= payload.radius_miles)
+    .filter((place) => distanceMiles(center, { lat: place.lat, lng: place.lng }) <= payload.radius_miles)
     .filter((place) => passesFilters(place, payload.filters))
-    .map((place) =>
-      rankPlace(place, center.lat, center.lng, payload.radius_miles, payload.filters),
-    )
+    .map((place) => rankPlace(place, center.lat, center.lng, payload.radius_miles, payload.filters))
     .sort((left, right) => right.final_score - left.final_score);
 
   return {

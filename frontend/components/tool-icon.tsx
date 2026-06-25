@@ -12,6 +12,16 @@ const labels: Record<string, string> = {
   sewing: "Textiles",
   waterjet: "Waterjet",
   vacuum_former: "Vacuum former",
+  design_lab: "Design lab",
+  training: "Training",
+  bio_lab: "Bio lab",
+  rapid_prototyping: "Rapid prototyping",
+  ceramics: "Ceramics",
+  leatherwork: "Leatherwork",
+  stained_glass: "Stained glass",
+  arts_fabrication: "Arts fabrication",
+  industrial_design: "Industrial design",
+  "3d_scanning": "3D scanning",
 };
 
 export function equipmentLabel(type: string) {
@@ -26,4 +36,3 @@ export function ToolPill({ type }: { type: string }) {
     </span>
   );
 }
-

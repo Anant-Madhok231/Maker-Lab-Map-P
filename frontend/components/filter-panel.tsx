@@ -20,9 +20,11 @@ const equipmentOptions = [
   ["laser_cutter", "Laser cutter"],
   ["3d_printer", "3D printer"],
   ["woodshop", "Woodshop"],
+  ["metal_shop", "Metal shop"],
   ["electronics", "Electronics"],
   ["sewing", "Sewing / textiles"],
-  ["vacuum_former", "Vacuum former"],
+  ["bio_lab", "Bio lab"],
+  ["training", "Classes / training"],
 ] as const;
 
 function Toggle({
@@ -95,7 +97,13 @@ export function FilterPanel({
         <Toggle
           checked={filters.cnc}
           label="CNC router"
-          onChange={(checked) => setFilters({ ...filters, cnc: checked })}
+          onChange={(checked) =>
+            setFilters({
+              ...filters,
+              cnc: checked,
+              equipment: filters.equipment.filter((item) => item !== "cnc_router"),
+            })
+          }
         />
         <Toggle
           checked={filters.large}
@@ -137,9 +145,7 @@ export function FilterPanel({
               <input
                 checked={filters.equipment.includes(type)}
                 className="h-4 w-4 rounded border-[#bbc1bb] accent-[#df6f48]"
-                onChange={(event) =>
-                  toggleEquipment(type, event.target.checked)
-                }
+                onChange={(event) => toggleEquipment(type, event.target.checked)}
                 type="checkbox"
               />
               {label}
@@ -158,4 +164,3 @@ export function FilterPanel({
     </aside>
   );
 }
-

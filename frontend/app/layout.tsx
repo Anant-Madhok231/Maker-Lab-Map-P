@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s | Maker Lab Map P",
   },
   description:
-    "Find evidence-backed CNC routers, laser cutters, 3D printers, woodshops, and fabrication services near Davis and Sacramento.",
+    "Find source-backed maker labs, workshops, hackerspaces, school labs, and fabrication services across Brooklyn, New York.",
 };
 
 export default function RootLayout({

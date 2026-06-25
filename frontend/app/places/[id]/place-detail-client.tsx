@@ -13,6 +13,12 @@ import {
 import { SiteHeader } from "@/components/site-header";
 import { ToolPill, equipmentLabel } from "@/components/tool-icon";
 import { getPlace } from "@/lib/api";
+import {
+  distanceMiles,
+  googleDirectionsUrl,
+  roundedMiles,
+  type GeoPoint,
+} from "@/lib/distance";
 import type { Place } from "@/lib/types";
 
 type PlaceDetailClientProps = {
@@ -30,6 +36,8 @@ function formatDate(value: string) {
 export function PlaceDetailClient({ placeId }: PlaceDetailClientProps) {
   const [place, setPlace] = useState<Place | null>(null);
   const [error, setError] = useState("");
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
+  const [locationStatus, setLocationStatus] = useState("");
 
   useEffect(() => {
     getPlace(placeId).then(setPlace).catch(() => setError("Place not found."));
@@ -63,6 +71,42 @@ export function PlaceDetailClient({ placeId }: PlaceDetailClientProps) {
   const largeCnc = place.equipment.find(
     (item) => item.equipment_type === "cnc_router" && item.passes_48x48,
   );
+  const destination = { lat: place.lat, lng: place.lng };
+  const exactDistance = userLocation
+    ? roundedMiles(distanceMiles(userLocation, destination))
+    : null;
+  const drivingUrl = googleDirectionsUrl({
+    destination,
+    mode: "driving",
+    origin: userLocation,
+  });
+  const walkingUrl = googleDirectionsUrl({
+    destination,
+    mode: "walking",
+    origin: userLocation,
+  });
+
+  function useExactLocation() {
+    if (!navigator.geolocation) {
+      setLocationStatus("Your browser does not support location sharing.");
+      return;
+    }
+
+    setLocationStatus("Asking your browser for your exact pin…");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setLocationStatus("Exact pin added.");
+      },
+      () => {
+        setLocationStatus("Location was not shared. Directions still open in Google Maps.");
+      },
+      { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 },
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f8f5ed]">
@@ -135,6 +179,38 @@ export function PlaceDetailClient({ placeId }: PlaceDetailClientProps) {
                 <div className="flex gap-3">
                   <ClockIcon className="h-5 w-5 shrink-0 text-[#ffb85c]" />
                   <span className="leading-6 text-[#d1dad3]">{place.hours_text}</span>
+                </div>
+              </div>
+              <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 p-4">
+                <button
+                  className="w-full rounded-full bg-white px-4 py-2 text-xs font-black text-[#172a20] transition hover:-translate-y-0.5"
+                  onClick={useExactLocation}
+                  type="button"
+                >
+                  Use my exact location
+                </button>
+                <p className="mt-3 text-xs leading-5 text-[#c4d1c8]">
+                  {exactDistance
+                    ? `From your pin: ${exactDistance}`
+                    : locationStatus || "Adds exact distance from your pin."}
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <a
+                    className="rounded-full bg-[#ffb85c] px-3 py-2 text-center text-xs font-black text-[#172a20]"
+                    href={drivingUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Drive
+                  </a>
+                  <a
+                    className="rounded-full border border-white/15 px-3 py-2 text-center text-xs font-black text-white"
+                    href={walkingUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Walk
+                  </a>
                 </div>
               </div>
             </div>

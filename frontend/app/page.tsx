@@ -10,10 +10,10 @@ import { SearchBox } from "@/components/search-box";
 import { SiteHeader } from "@/components/site-header";
 
 const quickChoices = [
-  ["CNC cutting", "Large-format routers and mills"],
-  ["Laser cutting", "Wood, acrylic, fabric, and more"],
-  ["3D printing", "From STL file to physical part"],
-  ["Staff-assisted", "Hand the file to a fabrication team"],
+  ["Sunset Park", "SJSW, Genspace, Craftsman Ave"],
+  ["CNC + shops", "Routers, mills, waterjet, wood, metal"],
+  ["Classes", "Guided workshops and training"],
+  ["Student labs", "NYU, Pratt, City Tech, STEAM"],
 ];
 
 export default function Home() {
@@ -22,47 +22,49 @@ export default function Home() {
       <SiteHeader />
 
       <section className="relative mx-auto max-w-[1440px] px-5 pb-20 pt-16 sm:px-8 lg:pb-28 lg:pt-24">
-        <div className="pointer-events-none absolute right-[-8rem] top-6 hidden h-[430px] w-[430px] rounded-full border-[70px] border-[#e8dfca]/60 lg:block" />
+        <div className="pointer-events-none absolute right-[-8rem] top-6 hidden h-[430px] w-[430px] animate-float-soft rounded-full border-[70px] border-[#e8dfca]/60 lg:block" />
         <div className="pointer-events-none absolute right-16 top-20 hidden h-32 w-32 rotate-12 rounded-[32px] bg-[#df6f48]/10 lg:block" />
+        <div className="pointer-events-none absolute left-[-10rem] top-[24rem] h-80 w-80 rounded-full bg-[#6fa9b6]/10 blur-3xl" />
 
-        <div className="relative max-w-4xl">
+        <div className="relative max-w-4xl animate-fade-up">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#172a20]/10 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#526057] shadow-sm">
             <span className="h-2 w-2 rounded-full bg-[#3f9766]" />
-            Evidence-backed fabrication access
+            Brooklyn source-backed maker labs
           </span>
           <h1 className="mt-8 max-w-4xl text-[clamp(3.2rem,8vw,7.4rem)] font-black leading-[0.86] tracking-[-0.075em] text-[#172a20]">
-            Find the machine
-            <span className="block text-[#df6f48]">that can make it.</span>
+            Brooklyn shops
+            <span className="block text-[#df6f48]">for people who make.</span>
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-8 text-[#566259] sm:text-xl">
-            Search nearby labs and fabrication shops by what their machines can
-            actually do—not just what the space calls itself.
+            Find maker labs, fab shops, hackerspaces, school labs, and guided
+            workshops across Brooklyn. Use your exact pin to see distance and
+            open driving or walking directions in Google Maps.
           </p>
         </div>
 
         <div className="relative mt-10 max-w-4xl">
           <SearchBox />
           <p className="mt-3 pl-3 text-xs font-semibold text-[#7c857e]">
-            Try “UC Davis,” “Woodland,” or “Sacramento”
+            Try “Brooklyn,” “Sunset Park,” “Industry City,” or “Brooklyn Navy Yard”
           </p>
         </div>
 
         <div className="relative mt-20 grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
           <div className="rounded-[34px] bg-[#172a20] p-7 text-white sm:p-9">
             <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#ffb85c]">
-              Built for real constraints
+              Built for real trips
             </p>
             <h2 className="mt-4 max-w-xl text-3xl font-black leading-tight tracking-[-0.045em] sm:text-4xl">
-              Need a 4×8 sheet routed? We check the bed size.
+              Drop a pin, pick a space, then open the route.
             </h2>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {[
-                ["48 × 96 in", "Confirmed work area"],
-                ["Official source", "Every equipment claim"],
-                ["50 miles", "Default local radius"],
+                ["SJSW", "Sunset Park workshop pinned"],
+                ["Google Maps", "Drive and walk links"],
+                ["25 miles", "Default Brooklyn radius"],
               ].map(([value, label]) => (
                 <div
-                  className="rounded-2xl border border-white/10 bg-white/5 p-4"
+                  className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:-translate-y-1 hover:bg-white/10"
                   key={value}
                 >
                   <p className="text-lg font-black text-white">{value}</p>
@@ -76,7 +78,13 @@ export default function Home() {
             {quickChoices.map(([title, subtitle], index) => (
               <Link
                 className="group flex min-h-40 flex-col justify-between rounded-[26px] border border-[#172a20]/10 bg-white p-5 transition hover:-translate-y-1 hover:border-[#df6f48]/50 hover:shadow-xl"
-                href={`/results?location=UC+Davis&radius=50&cnc=${index === 0}&large=${index === 0}`}
+                href={
+                  index === 0
+                    ? "/results?location=Sunset+Park&radius=10&cnc=false&large=false"
+                    : index === 1
+                      ? "/results?location=Brooklyn%2C+NY&radius=25&cnc=true&large=false"
+                      : "/results?location=Brooklyn%2C+NY&radius=25&cnc=false&large=false"
+                }
                 key={title}
               >
                 <span
@@ -125,9 +133,9 @@ export default function Home() {
       </section>
 
       <footer className="mx-auto flex max-w-[1440px] flex-col gap-4 px-5 py-10 text-sm text-[#6f7972] sm:px-8 md:flex-row md:items-center md:justify-between">
-        <p>Maker Lab Map P · Davis, Woodland & Sacramento</p>
+        <p>Maker Lab Map P · Brooklyn, New York</p>
         <Link className="inline-flex items-center gap-2 font-black text-[#172a20]" href="/results">
-          Browse verified capability
+          Browse Brooklyn labs
           <ArrowIcon className="h-4 w-4" />
         </Link>
       </footer>

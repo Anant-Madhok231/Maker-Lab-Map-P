@@ -11,20 +11,20 @@ type SearchBoxProps = {
 };
 
 export function SearchBox({
-  initialLocation = "UC Davis",
+  initialLocation = "Brooklyn, NY",
   compact = false,
 }: SearchBoxProps) {
   const router = useRouter();
   const [location, setLocation] = useState(initialLocation);
-  const [radius, setRadius] = useState("50");
+  const [radius, setRadius] = useState("25");
 
   function submit(event: FormEvent) {
     event.preventDefault();
     const params = new URLSearchParams({
-      location: location.trim() || "UC Davis",
+      location: location.trim() || "Brooklyn, NY",
       radius,
-      cnc: "true",
-      large: "true",
+      cnc: "false",
+      large: "false",
     });
     router.push(`/results?${params.toString()}`);
   }
@@ -65,9 +65,8 @@ export function SearchBox({
         type="submit"
       >
         <SearchIcon className="h-5 w-5" />
-        Find capable shops
+        Find maker labs
       </button>
     </form>
   );
 }
-

@@ -1,14 +1,16 @@
 # Maker Lab Map P
 
-Maker Lab Map P is a location-based fabrication access platform for Davis, Woodland, and Sacramento. It ranks labs and shops by confirmed machine capability, not by directory labels alone.
+Maker Lab Map P is a location-based maker-lab finder for Brooklyn, New York. It ranks labs, workshops, hackerspaces, school labs, and fabrication hubs by documented capability, access notes, and source evidence.
 
-The included MVP works immediately with a curated, evidence-backed local dataset. Optional Google Places, Google Geocoding, and Firecrawl keys enable live discovery and official-site recrawls.
+The included MVP works immediately with a curated, evidence-backed Brooklyn dataset. Optional Google Places, Google Geocoding, and Firecrawl keys enable live discovery and official-site recrawls.
 
 ## What is included
 
-- Location search for UC Davis, Davis, Woodland, and Sacramento
+- Location search for Brooklyn, Sunset Park, Industry City, Downtown Brooklyn, Gowanus, Fort Greene, and Brooklyn Navy Yard
 - Radius controls from 5 to 100 miles
-- CNC-router and minimum 48 × 48 inch capacity filters
+- CNC-router, equipment, access, and guided-support filters
+- Browser location button for exact distance from the visitor's pin
+- Google Maps driving and walking direction links for every listed lab
 - Capability-weighted ranking that can outrank a closer but unverified space
 - Official source, evidence snippet, fetch date, source type, and confidence on every equipment claim
 - Detail pages for equipment, machine dimensions, materials, files, access, and hours
@@ -68,7 +70,7 @@ YELP_API_KEY=
 
 Without keys:
 
-- Known MVP locations use a transparent local geocoding fallback.
+- Known Brooklyn locations use a transparent local geocoding fallback.
 - Search uses the curated source-backed records.
 - Live discovery and recrawl endpoints return a clear configuration message.
 

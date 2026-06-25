@@ -9,16 +9,17 @@ import { ResultCard } from "@/components/result-card";
 import { SearchBox } from "@/components/search-box";
 import { SiteHeader } from "@/components/site-header";
 import { searchPlaces } from "@/lib/api";
+import type { GeoPoint } from "@/lib/distance";
 import type { SearchResponse } from "@/lib/types";
 
 function ResultsContent() {
   const params = useSearchParams();
-  const location = params.get("location") || "UC Davis";
-  const initialRadius = Number(params.get("radius") || 50);
+  const location = params.get("location") || "Brooklyn, NY";
+  const initialRadius = Number(params.get("radius") || 25);
   const [radius, setRadius] = useState(initialRadius);
   const [filters, setFilters] = useState<Filters>({
-    cnc: params.get("cnc") !== "false",
-    large: params.get("large") !== "false",
+    cnc: params.get("cnc") === "true",
+    large: params.get("large") === "true",
     publicAccess: false,
     staffAssisted: false,
     showMaybe: true,
@@ -28,6 +29,8 @@ function ResultsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
+  const [locationStatus, setLocationStatus] = useState("");
 
   const requestPayload = useMemo(
     () => ({
@@ -73,6 +76,28 @@ function ResultsContent() {
     };
   }, [requestPayload]);
 
+  function useExactLocation() {
+    if (!navigator.geolocation) {
+      setLocationStatus("Your browser does not support location sharing.");
+      return;
+    }
+
+    setLocationStatus("Asking your browser for your exact pin…");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setLocationStatus("Exact pin added. Distances and directions are ready.");
+      },
+      () => {
+        setLocationStatus("Location was not shared. You can still open Google Maps directions.");
+      },
+      { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 },
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#f8f5ed]">
       <SiteHeader />
@@ -86,19 +111,28 @@ function ResultsContent() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.17em] text-[#df6f48]">
-              Capability search
+              Brooklyn maker map
             </p>
             <h1 className="mt-2 text-3xl font-black tracking-[-0.045em] text-[#172a20]">
-              Fabrication near {location}
+              Maker labs near {location}
             </h1>
             <p className="mt-2 text-sm text-[#68736b]">
               {data
-                ? `${data.total} evidence-backed matches within ${radius} miles of ${data.normalized_address}`
-                : "Checking machine capability and source evidence…"}
+                ? `${data.total} source-backed Brooklyn matches within ${radius} miles of ${data.normalized_address}`
+                : "Checking Brooklyn labs, access notes, and source evidence…"}
             </p>
           </div>
-          <div className="rounded-full border border-[#172a20]/10 bg-white px-4 py-2 text-xs font-bold text-[#5f6a62]">
-            Sorted by capability, confidence, then distance
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <button
+              className="rounded-full border border-[#172a20]/10 bg-white px-4 py-2 text-xs font-black text-[#172a20] shadow-sm transition hover:-translate-y-0.5 hover:border-[#df6f48]/40 hover:shadow-md"
+              onClick={useExactLocation}
+              type="button"
+            >
+              Use my exact location
+            </button>
+            <p className="max-w-xs text-xs font-semibold leading-5 text-[#6b756e] sm:text-right">
+              {locationStatus || "Adds distance from your pin plus driving and walking directions."}
+            </p>
           </div>
         </div>
 
@@ -135,6 +169,7 @@ function ResultsContent() {
                   onSelect={() => setSelectedId(place.id)}
                   place={place}
                   selected={place.id === selectedId}
+                  userLocation={userLocation}
                 />
               ))}
 
@@ -157,6 +192,7 @@ function ResultsContent() {
                 onSelect={setSelectedId}
                 places={data?.results || []}
                 selectedId={selectedId}
+                userLocation={userLocation}
               />
             </div>
           </aside>
