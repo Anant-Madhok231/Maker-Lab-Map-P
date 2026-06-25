@@ -24,19 +24,19 @@ jobs:
 
       - name: Apply pending website package
         run: |
-          if [ -f project-update-2.b64 ]; then
-            base64 -d project-update-2.b64 > pages-update.tar.gz
+          if [ -f project-update-3.b64 ]; then
+            base64 -d project-update-3.b64 > pages-update.tar.gz
             tar -xzf pages-update.tar.gz
             rm pages-update.tar.gz
             find . -name '._*' -delete
-            git rm -f project-update.b64 project-update-2.b64 2>/dev/null || true
-            git add frontend/next.config.ts               frontend/package.json               frontend/lib/api.ts               frontend/lib/static-search.ts               'frontend/app/places/[id]/page.tsx'               'frontend/app/places/[id]/place-detail-client.tsx'
+            git rm -f project-update-3.b64 2>/dev/null || true
+            git add README.md .github/workflows/apply-pages-update.yml frontend
             if git diff --cached --quiet; then
               echo "No packaged source changes to commit."
             else
               git config user.name "Anant-Madhok231"
               git config user.email "Anant-Madhok231@users.noreply.github.com"
-              git commit -m "Deploy website with GitHub Pages"
+              git commit -m "Update website for Brooklyn maker labs"
               git push
             fi
           else
