@@ -48,6 +48,88 @@ const knownLocations: Record<string, AddressPoint> = {
     lat: 40.6995,
     lng: -73.9716,
   },
+  boise: { address: "Boise, ID, USA", lat: 43.615, lng: -116.2023 },
+  "boise id": { address: "Boise, ID, USA", lat: 43.615, lng: -116.2023 },
+  "bishop kelly": {
+    address: "Bishop Kelly High School, Boise, ID",
+    lat: 43.6018303,
+    lng: -116.2687291,
+  },
+  "bishop kelly high school": {
+    address: "Bishop Kelly High School, Boise, ID",
+    lat: 43.6018303,
+    lng: -116.2687291,
+  },
+  "7009 franklin rd boise id": {
+    address: "7009 W Franklin Road, Boise, ID 83709",
+    lat: 43.6018303,
+    lng: -116.2687291,
+  },
+  "7009 franklin road boise id": {
+    address: "7009 W Franklin Road, Boise, ID 83709",
+    lat: 43.6018303,
+    lng: -116.2687291,
+  },
+  "maker shop boise": {
+    address: "6883 W Overland Road, Boise, ID 83709",
+    lat: 43.5890881,
+    lng: -116.2670525,
+  },
+  "boise state": {
+    address: "Boise State University, Boise, ID",
+    lat: 43.6042725,
+    lng: -116.2033184,
+  },
+  "boise state university": {
+    address: "Boise State University, Boise, ID",
+    lat: 43.6042725,
+    lng: -116.2033184,
+  },
+  "jump boise": {
+    address: "JUMP, Boise, ID",
+    lat: 43.6141349,
+    lng: -116.2081801,
+  },
+  "one stone": {
+    address: "One Stone, Boise, ID",
+    lat: 43.6137948,
+    lng: -116.2113762,
+  },
+  "cwi ada": {
+    address: "CWI Ada County Center Pintail Building, Boise, ID",
+    lat: 43.5926325,
+    lng: -116.2980184,
+  },
+  "cwi pintail": {
+    address: "CWI Ada County Center Pintail Building, Boise, ID",
+    lat: 43.5926325,
+    lng: -116.2980184,
+  },
+  "cwi nampa": {
+    address: "College of Western Idaho, Nampa, ID",
+    lat: 43.5928,
+    lng: -116.5206,
+  },
+  meridian: {
+    address: "Meridian, ID, USA",
+    lat: 43.6121,
+    lng: -116.3915,
+  },
+  unbound: {
+    address: "Meridian Library unBound, Meridian, ID",
+    lat: 43.6106225,
+    lng: -116.389875,
+  },
+  "meridian unbound": {
+    address: "Meridian Library unBound, Meridian, ID",
+    lat: 43.6106225,
+    lng: -116.389875,
+  },
+  xanadu: {
+    address: "Xanadu Boise, Boise, ID",
+    lat: 43.620046,
+    lng: -116.244294,
+  },
 };
 
 function normalizeAddress(value: string) {
