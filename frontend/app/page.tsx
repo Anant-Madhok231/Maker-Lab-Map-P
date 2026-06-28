@@ -12,8 +12,10 @@ import { SiteHeader } from "@/components/site-header";
 const quickChoices = [
   ["Near UC Davis", "Davis, Woodland, Sacramento"],
   ["Brooklyn", "SJSW, Newlab, NYC Resistor"],
+  ["Boise", "Maker Shop, Boise State, JUMP"],
+  ["Near Bishop Kelly", "BK, Maker Shop, CWI Pintail"],
   ["CNC + shops", "Routers, mills, waterjet, wood, metal"],
-  ["Student labs", "UC Davis, SCC, NYU, Pratt"],
+  ["Student labs", "UC Davis, SCC, NYU, Pratt, Boise State"],
 ];
 
 export default function Home() {
@@ -45,7 +47,7 @@ export default function Home() {
         <div className="relative mt-10 max-w-4xl animate-fade-up [animation-delay:140ms]">
           <SearchBox />
           <p className="mt-3 pl-3 text-xs font-semibold text-[#7c857e]">
-            Try “UC Davis,” “Sacramento,” “Woodland,” “Brooklyn,” or “Sunset Park”
+            Try “UC Davis,” “Sacramento,” “Brooklyn,” “Boise,” or “Bishop Kelly”
           </p>
         </div>
 
@@ -59,7 +61,7 @@ export default function Home() {
             </h2>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {[
-                ["18 places", "California plus Brooklyn"],
+                ["28 places", "California, Brooklyn, and Boise"],
                 ["Google Maps", "Drive and walk links"],
                 ["Source links", "Evidence for each claim"],
               ].map(([value, label]) => (
@@ -84,8 +86,12 @@ export default function Home() {
                     : index === 1
                       ? "/results?location=Brooklyn%2C+NY&radius=25&cnc=false&large=false"
                       : index === 2
-                        ? "/results?location=UC+Davis&radius=50&cnc=true&large=false"
-                        : "/results?location=UC+Davis&radius=50&cnc=false&large=false"
+                        ? "/results?location=Boise%2C+ID&radius=25&cnc=false&large=false"
+                        : index === 3
+                          ? "/results?location=Bishop+Kelly+High+School&radius=12&cnc=false&large=false"
+                          : index === 4
+                            ? "/results?location=Boise%2C+ID&radius=60&cnc=true&large=false"
+                            : "/results?location=UC+Davis&radius=50&cnc=false&large=false"
                 }
                 key={title}
                 style={{ animationDelay: `${300 + index * 80}ms` }}
