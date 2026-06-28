@@ -21,8 +21,11 @@ const equipmentOptions = [
   ["3d_printer", "3D printer"],
   ["woodshop", "Woodshop"],
   ["metal_shop", "Metal shop"],
+  ["machine_shop", "Machine shop"],
   ["electronics", "Electronics"],
+  ["vinyl_cutter", "Vinyl cutter"],
   ["sewing", "Sewing / textiles"],
+  ["computer_lab", "Computer lab"],
   ["bio_lab", "Bio lab"],
   ["training", "Classes / training"],
 ] as const;
