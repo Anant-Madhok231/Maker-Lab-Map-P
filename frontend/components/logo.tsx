@@ -15,6 +15,9 @@ export function Logo() {
         <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.2em] text-[#6d786f]">
           Maker lab finder
         </span>
+        <span className="mt-1 block text-[10px] font-semibold normal-case tracking-normal text-[#df6f48]">
+          Made by one of our fellows, Anant Madhok!
+        </span>
       </span>
     </Link>
   );
